@@ -134,13 +134,17 @@ class ZFSMetadataHandler(MetadataHandler):
         try: # ignore exception if metadata doesn't exist. Fix it later
             db = TinyDB('%s/%s/__meta__' % (utils.SR_PATH_PREFIX, sr_uuid), default_table='pool')
 
-            if vdi_uuid is not None:
+            if vdi_uuid != '':
                 table = db.table('vdis')
+                uuid_tag = UUID_TAG
+                uuid = vdi_uuid
             else:
                 table = db.table('pool')
+                uuid_tag = SR_UUID_TAG
+                uuid = sr_uuid
 
             try:
-                table.remove(where('key') == vdi_uuid)
+                table.remove(where(uuid_tag) == uuid)
             except Exception:
                 raise Volume_does_not_exist(uri)
         except:
@@ -159,14 +163,18 @@ class ZFSMetadataHandler(MetadataHandler):
 
             if vdi_uuid != '':
                 table = db.table('vdis')
+                uuid_tag = UUID_TAG
+                uuid = vdi_uuid
             else:
                 table = db.table('pool')
+                uuid_tag = SR_UUID_TAG
+                uuid = sr_uuid
 
             try:
-                image_meta = table.all()[0]
+                image_meta = table.search(where(uuid_tag) == uuid)[0]
 
-                log.debug("%s: meta.ZFSMetadataHandler._load: Pool_name: %s Metadata: %s "
-                          % (dbg, sr_uuid, image_meta))
+                log.debug("%s: meta.ZFSMetadataHandler._load: Pool/Image_name: %s Metadata: %s "
+                          % (dbg, uuid, image_meta))
             except Exception:
                 raise Volume_does_not_exist(uri)
 
