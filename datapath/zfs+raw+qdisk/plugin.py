@@ -12,7 +12,7 @@ elif platform.linux_distribution()[1] == '7.6.0':
 from xapi.storage import log
 
 
-class Implementation(Plugin_skeleton):
+class ZFSImplementation(Plugin_skeleton):
 
     def query(self, dbg):
         if platform.linux_distribution()[1] == '7.5.0':
@@ -47,7 +47,7 @@ class Implementation(Plugin_skeleton):
 
 if __name__ == "__main__":
     log.log_call_argv()
-    CMD = Plugin_commandline(Implementation())
+    CMD = Plugin_commandline(ZFSImplementation())
     CMD_BASE = os.path.basename(sys.argv[0])
     if CMD_BASE == "Plugin.Query":
         CMD.query()

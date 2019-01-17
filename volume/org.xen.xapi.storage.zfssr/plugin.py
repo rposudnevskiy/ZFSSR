@@ -12,7 +12,7 @@ elif platform.linux_distribution()[1] == '7.6.0':
 from xapi.storage import log
 
 
-class Implementation(Plugin_skeleton):
+class ZFSImplementation(Plugin_skeleton):
 
     def diagnostics(self, dbg):
         return "No diagnostic data to report"
@@ -80,7 +80,7 @@ class Implementation(Plugin_skeleton):
 
 if __name__ == "__main__":
     log.log_call_argv()
-    cmd = Plugin_commandline(Implementation())
+    cmd = Plugin_commandline(ZFSImplementation())
     base = os.path.basename(sys.argv[0])
     if base == 'Plugin.diagnostics':
         cmd.diagnostics()
