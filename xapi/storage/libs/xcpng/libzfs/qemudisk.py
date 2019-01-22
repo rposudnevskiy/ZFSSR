@@ -6,7 +6,7 @@ from xapi.storage.libs.xcpng.qemudisk import ROOT_NODE_NAME
 
 class ZFSQemudisk(Qemudisk):
 
-    def _set_open_args_(self):
+    def _set_open_args_(self, dbg):
 
         self.open_args = {'driver': self.vdi_type,
                           'cache': {'direct': True, 'no-flush': True},
