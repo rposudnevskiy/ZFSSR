@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from subprocess import call
+
 from xapi.storage import log
 
 from tinydb import TinyDB, Query, where
@@ -18,7 +20,16 @@ class ZFSMetadataHandler(MetadataHandler):
 
         sr_uuid = get_sr_uuid_by_uri(dbg, uri)
         log.debug("%s: meta.ZFSMetadataHandler._load: metapath: %s" % (dbg, '%s/%s/__meta__' % (SR_PATH_PREFIX, sr_uuid)))
-        db = TinyDB('%s/%s/__meta__' % (SR_PATH_PREFIX, sr_uuid), default_table='pool')
+        db = TinyDB("%s/%s/__meta__" % (SR_PATH_PREFIX, sr_uuid), default_table='pool')
+
+    @staticmethod
+    def _destroy(dbg, uri):
+        log.debug("%s: meta.ZFSMetadataHandler._destroy: uri: %s"
+                  % (dbg, uri))
+
+        sr_uuid = get_sr_uuid_by_uri(dbg, uri)
+
+        call(['rm', '-f', "%s/%s/__meta__" % (SR_PATH_PREFIX, sr_uuid)])
 
     @staticmethod
     def _remove(dbg, uri):
