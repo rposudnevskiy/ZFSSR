@@ -21,9 +21,10 @@ class ZFSSROperations(SROperations):
                     mountpoint="%s/%s" % (SR_PATH_PREFIX, get_sr_uuid_by_uri(dbg, uri)))
 
     def destroy(self, dbg, uri):
+        self.sr_import(dbg, uri, {})
         pool_destroy(dbg, get_pool_name_by_uri(dbg, uri))
 
-    def get_sr_list(self, dbg):
+    def get_sr_list(self, dbg, configuration):
         zfs_pools = []
         for zfs_pool in pool_list(dbg):
             if zfs_pool.startswith("%s%s" % ('ZFS', POOL_PREFIX)):
@@ -37,7 +38,7 @@ class ZFSSROperations(SROperations):
                 zvols.append(zvol)
         return zvols
 
-    def sr_import(self, dbg, uri):
+    def sr_import(self, dbg, uri, configuration):
         pool_import(dbg, get_pool_name_by_uri(dbg, uri))
 
     def sr_export(self, dbg, uri):
