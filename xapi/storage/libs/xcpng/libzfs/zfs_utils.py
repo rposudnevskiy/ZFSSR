@@ -9,27 +9,30 @@ from xapi.storage import log
 VOLBLOCKSIZE=8192
 VOLMODE='dev'
 
-def pool_create(dbg, pool_name, vdev, mountpoint=None, root=None):
+def pool_create(dbg, pool_name, vdev):
     log.debug("%s: zfs_utils.pool_create: pool_name: %s device: %s" % (dbg, pool_name, vdev))
-    cmd = ['zpool', 'create']
-    if mountpoint is not None:
-        cmd.extend(['-m', mountpoint])
-    if root is not None:
-        cmd.extend(['-R', root])
-    cmd.extend([pool_name, vdev])
-    call(cmd)
+    call(['zpool', 'create', '-m', 'legacy', pool_name, vdev])
 
 def pool_destroy(dbg, pool_name):
     log.debug("%s: zfs_utils.pool_destroy: pool_name: %s" % (dbg, pool_name))
     call(['zpool', 'destroy', pool_name])
 
-def pool_import(dbg, pool_name):
-    log.debug("%s: zfs_utils.pool_import: pool_name: %s" % (dbg, pool_name))
-    #call(['zpool', 'import', '-d', '/root', pool_name]) # for pool in file
-    call(['zpool', 'import', pool_name])  # for pool on disk device
+def pool_import(dbg, pool_name, mountpoint=None):
+    log.debug("%s: zfs_utils.pool_import: pool_name: %s mountpoint: %s" % (dbg, pool_name, mountpoint))
+    cmd = ['zpool', 'import', pool_name]
+    call(cmd)
+    cmd = ['zfs', 'set']
+    if mountpoint is not None:
+        cmd.extend(["mountpoint=%s" % mountpoint])
+    else:
+        cmd.extend(['mountpoint=legacy'])
+    cmd.extend([pool_name])
+    call(cmd)
+    log.debug("%s: zfs_utils.pool_import: cmd %s" % (dbg, cmd))
 
 def pool_export(dbg, pool_name):
     log.debug("%s: zfs_utils.pool_export: pool_name: %s" % (dbg, pool_name))
+    call(['zfs', 'set', 'mountpoint=legacy', pool_name])
     call(['zpool', 'export', pool_name])
 
 def pool_set(dbg, pool_name, property, value):
@@ -78,8 +81,12 @@ def zvol_destroy(dbg, image_name):
     call(['zfs', 'destroy', image_name])
 
 def zvol_set(dbg, image_name, property, value):
-    log.debug("%s: zfs_utils.zvol_set: image_name: %s property: $s value: %s" % (dbg, image_name, value))
+    log.debug("%s: zfs_utils.zvol_set: image_name: %s property: %s value: %s" % (dbg, image_name, property, value))
     call(['zfs', 'set', '%s=%s' % (property, value), image_name])
+
+def zvol_rename(dbg, image_name, new_image_name):
+    log.debug("%s: zfs_utils.zvol_rename: image_name: %s new_image_name: %s" % (dbg, image_name, new_image_name))
+    call(['zfs', 'rename', image_name, new_image_name])
 
 def zvol_get(dbg, image_name, property):
     retval = check_output(['zfs', 'get', property, '-Hp', image_name])

@@ -11,13 +11,13 @@ if platform.linux_distribution()[1] == '7.5.0':
 elif platform.linux_distribution()[1] == '7.6.0':
     from xapi.storage.api.v5.volume import Volume_commandline, Unimplemented
 
-from xapi.storage.libs.xcpng.libzfs.volume import ZFSImplementation
+from xapi.storage.libs.xcpng.libzfs.volume import Implementation, VOLUME_TYPES
 
 
 if __name__ == "__main__":
     """Parse the arguments and call the required command"""
     log.log_call_argv()
-    cmd = Volume_commandline(ZFSImplementation())
+    cmd = Volume_commandline(Implementation(VOLUME_TYPES))
     base = os.path.basename(sys.argv[0])
     if base == "Volume.create":
         cmd.create()

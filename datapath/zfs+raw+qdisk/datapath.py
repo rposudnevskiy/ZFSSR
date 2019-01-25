@@ -14,11 +14,11 @@ if platform.linux_distribution()[1] == '7.5.0':
 elif platform.linux_distribution()[1] == '7.6.0':
     from xapi.storage.api.v5.datapath import Datapath_commandline, Unimplemented
 
-from xapi.storage.libs.xcpng.libzfs.datapath import ZFSImplementation
+from xapi.storage.libs.xcpng.libzfs.datapath import Implementation, DATAPATHES
 
 if __name__ == "__main__":
     log.log_call_argv()
-    CMD = Datapath_commandline(ZFSImplementation())
+    CMD = Datapath_commandline(Implementation(DATAPATHES))
     CMD_BASE = os.path.basename(sys.argv[0])
     if CMD_BASE == "Datapath.activate":
         CMD.activate()

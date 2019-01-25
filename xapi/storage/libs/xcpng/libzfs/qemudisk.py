@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-from xapi.storage.libs.xcpng.qemudisk import Qemudisk
+from xapi.storage.libs.xcpng.qemudisk import Qemudisk as _Qemudisk_
 from xapi.storage.libs.xcpng.qemudisk import ROOT_NODE_NAME
 
 
-class ZFSQemudisk(Qemudisk):
+class Qemudisk(_Qemudisk_):
 
     def _set_open_args_(self, dbg):
 

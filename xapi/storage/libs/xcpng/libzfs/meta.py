@@ -8,10 +8,10 @@ from tinydb import TinyDB, Query, where
 from tinydb.operations import delete
 
 from xapi.storage.libs.xcpng.utils import get_sr_uuid_by_uri, get_vdi_uuid_by_uri, SR_PATH_PREFIX
-from xapi.storage.libs.xcpng.meta import *
+from xapi.storage.libs.xcpng.meta import MetadataHandler as _MetadataHandler_
+from xapi.storage.libs.xcpng.meta import UUID_TAG, SR_UUID_TAG
 
-
-class ZFSMetadataHandler(MetadataHandler):
+class MetadataHandler(_MetadataHandler_):
 
     @staticmethod
     def _create(dbg, uri):

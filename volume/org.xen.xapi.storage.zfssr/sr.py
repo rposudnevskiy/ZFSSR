@@ -11,12 +11,12 @@ if platform.linux_distribution()[1] == '7.5.0':
 elif platform.linux_distribution()[1] == '7.6.0':
     from xapi.storage.api.v5.volume import SR_commandline, Unimplemented
 
-from xapi.storage.libs.xcpng.libzfs.sr import ZFSImplementation
+from xapi.storage.libs.xcpng.libzfs.sr import Implementation, SR
 
 
 if __name__ == "__main__":
     log.log_call_argv()
-    cmd = SR_commandline(ZFSImplementation())
+    cmd = SR_commandline(Implementation(SR))
     base = os.path.basename(sys.argv[0])
     if base == 'SR.probe':
         cmd.probe()
