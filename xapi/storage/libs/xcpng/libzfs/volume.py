@@ -43,8 +43,8 @@ class VolumeOperations(_VolumeOperations_):
 
     def swap(self, dbg, uri1, uri2):
         tmp_image_name = "ZFS%s%s/%s" % (POOL_PREFIX,
-                                           get_sr_uuid_by_uri(dbg, uri1),
-                                           'tmp')
+                                         get_sr_uuid_by_uri(dbg, uri1),
+                                         'tmp')
         image_name1 = "ZFS%s%s/%s%s" % (POOL_PREFIX,
                                        get_sr_uuid_by_uri(dbg, uri1),
                                        VDI_PREFIXES[get_vdi_type_by_uri(dbg, uri1)],

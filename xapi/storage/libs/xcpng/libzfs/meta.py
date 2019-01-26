@@ -9,12 +9,11 @@ from tinydb.operations import delete
 
 from xapi.storage.libs.xcpng.utils import get_sr_uuid_by_uri, get_vdi_uuid_by_uri, SR_PATH_PREFIX
 from xapi.storage.libs.xcpng.meta import MetadataHandler as _MetadataHandler_
-from xapi.storage.libs.xcpng.meta import UUID_TAG, SR_UUID_TAG
+from xapi.storage.libs.xcpng.meta import UUID_TAG, SR_UUID_TAG, PARENT_URI_TAG
 
 class MetadataHandler(_MetadataHandler_):
 
-    @staticmethod
-    def _create(dbg, uri):
+    def _create(self, dbg, uri):
         log.debug("%s: meta.ZFSMetadataHandler._create: uri: %s"
                   % (dbg, uri))
 
@@ -22,8 +21,7 @@ class MetadataHandler(_MetadataHandler_):
         log.debug("%s: meta.ZFSMetadataHandler._load: metapath: %s" % (dbg, '%s/%s/__meta__' % (SR_PATH_PREFIX, sr_uuid)))
         db = TinyDB("%s/%s/__meta__" % (SR_PATH_PREFIX, sr_uuid), default_table='pool')
 
-    @staticmethod
-    def _destroy(dbg, uri):
+    def _destroy(self, dbg, uri):
         log.debug("%s: meta.ZFSMetadataHandler._destroy: uri: %s"
                   % (dbg, uri))
 
@@ -31,8 +29,7 @@ class MetadataHandler(_MetadataHandler_):
 
         call(['rm', '-f', "%s/%s/__meta__" % (SR_PATH_PREFIX, sr_uuid)])
 
-    @staticmethod
-    def _remove(dbg, uri):
+    def _remove(self, dbg, uri):
         log.debug("%s: meta.ZFSMetadataHandler._remove: uri: %s"
                   % (dbg, uri))
 
@@ -58,8 +55,7 @@ class MetadataHandler(_MetadataHandler_):
         except:
             pass
 
-    @staticmethod
-    def _load(dbg, uri):
+    def _load(self, dbg, uri):
         log.debug("%s: meta.ZFSMetadataHandler._load: uri: %s"
                   % (dbg, uri))
 
@@ -90,8 +86,7 @@ class MetadataHandler(_MetadataHandler_):
         except:
             return {}
 
-    @staticmethod
-    def _update(dbg, uri, image_meta):
+    def _update(self, dbg, uri, image_meta):
         log.debug("%s: meta.ZFSMetadataHandler._update_meta: uri: %s image_meta: %s"
                   % (dbg, uri, image_meta))
 
@@ -131,3 +126,33 @@ class MetadataHandler(_MetadataHandler_):
                     raise Exception("Failed to update metadata for uri %s" % uri)
         except:
             pass
+
+    def _get_vdi_chain(self, dbg, uri):
+        log.debug("%s: meta.ZFSMetadataHandler._get_vdi_chain: uri: %s"
+                  % (dbg, uri))
+
+        sr_uuid = get_sr_uuid_by_uri(dbg, uri)
+        vdi_uuid = get_vdi_uuid_by_uri(dbg, uri)
+
+        vdi_chain = []
+
+        try:
+            db = TinyDB('%s/%s/__meta__' % (SR_PATH_PREFIX, sr_uuid), default_table='vdis')
+        except:
+            raise Exception("Failed to open metadata db")
+
+        while True:
+            try:
+                image_meta = db.search(where(UUID_TAG) == vdi_uuid)[0]
+            except Exception:
+                raise Exception("Failed to load metadata for uri %s" % uri)
+
+            if PARENT_URI_TAG in image_meta:
+                vdi_chain.append(image_meta[PARENT_URI_TAG])
+                vdi_uuid = get_vdi_uuid_by_uri(dbg, image_meta[PARENT_URI_TAG])
+            else:
+                break
+
+        return vdi_chain
+
+

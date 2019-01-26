@@ -9,9 +9,12 @@ from xapi.storage import log
 VOLBLOCKSIZE=8192
 VOLMODE='dev'
 
-def pool_create(dbg, pool_name, vdev):
-    log.debug("%s: zfs_utils.pool_create: pool_name: %s device: %s" % (dbg, pool_name, vdev))
-    call(['zpool', 'create', '-m', 'legacy', pool_name, vdev])
+def pool_create(dbg, pool_name, vdev, mountpoint=None):
+    log.debug("%s: zfs_utils.pool_create: pool_name: %s device: %s mountpoint: %s" % (dbg, pool_name, vdev, mountpoint))
+    if mountpoint is not None:
+        call(['zpool', 'create', '-m', mountpoint, pool_name, vdev])
+    else:
+        call(['zpool', 'create', '-m', 'legacy', pool_name, vdev])
 
 def pool_destroy(dbg, pool_name):
     log.debug("%s: zfs_utils.pool_destroy: pool_name: %s" % (dbg, pool_name))

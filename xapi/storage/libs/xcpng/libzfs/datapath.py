@@ -15,12 +15,12 @@ class QdiskDatapath(_QdiskDatapath_):
         self.MetadataHandler = MetadataHandler()
         self.qemudisk = Qemudisk
 
-    def map_vol(self, dbg, uri):
+    def map_vol(self, dbg, uri, chained=False):
         self.blkdev = "/dev/zvol/ZFS%s%s/%s%s" % (POOL_PREFIX,
                                                   get_sr_uuid_by_uri(dbg, uri),
                                                   VDI_PREFIXES[get_vdi_type_by_uri(dbg, uri)],
                                                   get_vdi_uuid_by_uri(dbg, uri))
-        super(QdiskDatapath, self).map_vol(dbg, uri)
+        super(QdiskDatapath, self).map_vol(dbg, uri, chained)
 
 
 DATAPATHES['qdisk'] = QdiskDatapath()

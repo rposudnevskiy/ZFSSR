@@ -21,10 +21,10 @@ if __name__ == "__main__":
     base = os.path.basename(sys.argv[0])
     if base == "Volume.create":
         cmd.create()
-#    elif base == "Volume.snapshot":
-#        cmd.snapshot()
-#    elif base == "Volume.clone":
-#        cmd.clone()
+    elif base == "Volume.snapshot":
+        cmd.snapshot()
+    elif base == "Volume.clone":
+        cmd.clone()
     elif base == "Volume.destroy":
         cmd.destroy()
     elif base == "Volume.set_name":

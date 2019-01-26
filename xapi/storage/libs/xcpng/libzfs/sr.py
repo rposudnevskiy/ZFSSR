@@ -20,7 +20,8 @@ class SROperations(_SROperations_):
     def create(self, dbg, uri, configuration):
         pool_create(dbg,
                     get_pool_name_by_uri(dbg, uri),
-                    configuration['vdev'])
+                    configuration['vdev'],
+                    mountpoint=configuration['mountpoint'] if 'mountpoint' in configuration else None)
 
     def destroy(self, dbg, uri):
         self.sr_import(dbg, uri, {})
