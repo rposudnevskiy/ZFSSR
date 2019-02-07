@@ -8,7 +8,7 @@ from xapi.storage.libs.xcpng.sr import SR as _SR_
 
 from xapi.storage.libs.xcpng.libzfs.zfs_utils import pool_list, pool_import, pool_export, pool_create, pool_destroy, \
                                                      zvol_list, pool_get
-from xapi.storage.libs.xcpng.utils import POOL_PREFIX, VDI_PREFIXES, get_pool_name_by_uri, \
+from xapi.storage.libs.xcpng.utils import POOL_PREFIX, VDI_PREFIXES, get_sr_name_by_uri, get_sr_uuid_by_name, \
                                           get_vdi_type_by_uri, get_sr_type_by_uri
 from xapi.storage.libs.xcpng.libzfs.meta import MetadataHandler
 
@@ -22,27 +22,27 @@ class SROperations(_SROperations_):
     def create(self, dbg, uri, configuration):
         log.debug("%s: xcpng.libzfs.sr.SROperations.create: uri: %s configuration %s" % (dbg, uri, configuration))
         pool_create(dbg,
-                    get_pool_name_by_uri(dbg, uri),
+                    get_sr_name_by_uri(dbg, uri),
                     configuration['vdevs'],
                     configuration['mountpoint'])
 
     def destroy(self, dbg, uri):
         log.debug("%s: xcpng.libzfs.sr.SROperations.destroy: uri: %s" % (dbg, uri))
         self.sr_import(dbg, uri, {})
-        pool_destroy(dbg, get_pool_name_by_uri(dbg, uri))
+        pool_destroy(dbg, get_sr_name_by_uri(dbg, uri))
 
     def get_sr_list(self, dbg, uri, configuration):
         log.debug("%s: xcpng.libzfs.sr.SROperations.get_sr_list: uri: %s configuration %s" % (dbg, uri, configuration))
-        zfs_pools = []
+        srs = []
         for zfs_pool in pool_list(dbg):
             if zfs_pool.startswith("%s%s" % (get_sr_type_by_uri(dbg,uri), POOL_PREFIX)):
-                zfs_pools.append(zfs_pool)
-        return zfs_pools
+                srs.append("%s/%s" % (uri, get_sr_uuid_by_name(dbg, zfs_pool)))
+        return srs
 
     def get_vdi_list(self, dbg, uri):
         log.debug("%s: xcpng.libzfs.sr.SROperations.get_vdi_list: uri: %s" % (dbg, uri))
         zvols = []
-        for zvol in zvol_list(dbg, get_pool_name_by_uri(dbg, uri)):
+        for zvol in zvol_list(dbg, get_sr_name_by_uri(dbg, uri)):
             if zvol.startswith(VDI_PREFIXES[get_vdi_type_by_uri(dbg, uri)]):
                 zvols.append(zvol)
         return zvols
@@ -50,20 +50,20 @@ class SROperations(_SROperations_):
     def sr_import(self, dbg, uri, configuration):
         log.debug("%s: xcpng.libzfs.sr.SROperations.sr_import: uri: %s configuration %s" % (dbg, uri, configuration))
         pool_import(dbg,
-                    get_pool_name_by_uri(dbg, uri),
+                    get_sr_name_by_uri(dbg, uri),
                     configuration['mountpoint'])
 
     def sr_export(self, dbg, uri):
         log.debug("%s: xcpng.libzfs.sr.SROperations.sr_export: uri: %s" % (dbg, uri))
-        pool_export(dbg, get_pool_name_by_uri(dbg, uri))
+        pool_export(dbg, get_sr_name_by_uri(dbg, uri))
 
     def get_free_space(self, dbg, uri):
         log.debug("%s: xcpng.libzfs.sr.SROperations.get_free_space: uri: %s" % (dbg, uri))
-        return int(pool_get(dbg, get_pool_name_by_uri(dbg, uri), 'free'))
+        return int(pool_get(dbg, get_sr_name_by_uri(dbg, uri), 'free'))
 
     def get_size(self, dbg, uri):
-        log.debug("%s: xcpng.libzfs.sr.SROperations.sr_size: uri: %s" % (dbg, uri))
-        return int(pool_get(dbg, get_pool_name_by_uri(dbg, uri), 'size'))
+        log.debug("%s: xcpng.libzfs.sr.SROperations.get_size: uri: %s" % (dbg, uri))
+        return int(pool_get(dbg, get_sr_name_by_uri(dbg, uri), 'size'))
 
 class SR(_SR_):
 
