@@ -52,7 +52,7 @@ def pool_list(dbg, imported=False):
     pools = []
     if imported is False:
         regex = re.compile('\s+pool:\s+(.*)')
-        for line in iter(call(dbg, ['zpool', 'import']).readline,''):
+        for line in call(dbg, ['zpool', 'import']).split('\n'):
             result = regex.match(line)
             if result:
                 pools.append(result.group(1))
