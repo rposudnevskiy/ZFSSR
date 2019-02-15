@@ -98,7 +98,7 @@ def zvol_list(dbg, pool_name):
     log.debug("%s: zfs_utils.zvol_list: pool_name: %s " % (dbg, pool_name))
     zvols = []
     regex = re.compile('.*/(\w+-.*)\s+(\d+)\s+(\d+)\s+(\d+)\s+-')
-    for line in iter(call(dbg, ['zfs', 'list', '-Hpr', pool_name]).readline, ''):
+    for line in call(dbg, ['zfs', 'list', '-Hpr', pool_name]).split('\n'):
         result = regex.match(line)
         if result:
             zvols.append(result.group(1))
