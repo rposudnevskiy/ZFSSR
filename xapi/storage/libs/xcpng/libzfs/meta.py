@@ -12,6 +12,12 @@ class MetaDBOperations(_MetaDBOperations_):
     def __init__(self):
         self.lh = None
 
+    def create(self, dbg, uri):
+        log.debug("%s: xcpng.libzfs.meta.MetaDBOpeations.create: uri: %s" % (dbg, uri))
+        fd = open("%s/%s/__meta__" % (SR_PATH_PREFIX, get_sr_uuid_by_uri(dbg, uri)), 'w')
+        fd.write('{"sr": {}}')
+        fd.close()
+
     def destroy(self, dbg, uri):
         log.debug("%s: xcpng.libzfs.meta.MetaDBOpeations.destroy: uri: %s" % (dbg, uri))
         call(dbg, ['rm', '-f', "%s/%s/__meta__" % (SR_PATH_PREFIX, get_sr_uuid_by_uri(dbg, uri))])
